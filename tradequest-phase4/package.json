@@ -1,0 +1,16 @@
+{
+  "name": "tradequest-phase3",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env server.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "express": "^5.1.0",
+    "openai": "^5.23.0",
+    "stripe": "^18.5.0"
+  }
+}

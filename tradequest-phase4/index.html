@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07100b">
+  <title>TradeQuest Phase 4 — Learn Trading Like a Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="phase3-banner">
+  <strong>PHASE 4</strong>
+  <span>Launch build • cloud-ready • simulated trading only</span>
+  <button onclick="showView('pro')">Upgrade</button>
+</div>
+  <header class="site-header">
+    <button class="brand brand-btn" onclick="showView('dashboard')" aria-label="TradeQuest home">TRADE<span>QUEST</span></button>
+    <nav>
+      <button onclick="showView('dashboard')">Dashboard</button>
+      <button onclick="showView('learn')">Learn</button>
+      <button onclick="showView('simulator')">Simulator</button>
+      <button onclick="showView('achievements')">Achievements</button>
+    </nav>
+    <div class="header-player">
+      <span id="headerLevel">LVL 1</span>
+      <button class="avatar" id="avatarBtn" onclick="showProfile()">R</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-dashboard" class="view active">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">PLAYER HQ</div>
+          <h1>Welcome back, <span id="playerName">Rookie</span>.</h1>
+          <p>Build market knowledge one quest at a time. Your money is virtual. Your progress is real.</p>
+        </div>
+        <button class="primary" onclick="continueQuest()">Continue Quest →</button>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="player-card card glow">
+          <div class="rank-row"><div><small>CURRENT RANK</small><strong id="rankName">Rookie Trader</strong></div><div class="level-badge" id="levelBadge">1</div></div>
+          <div class="xp-label"><span id="xpText">0 / 500 XP</span><span id="xpPercent">0%</span></div>
+          <div class="xp-bar"><i id="xpBar"></i></div>
+          <div class="stat-grid">
+            <div><small>🔥 STREAK</small><strong id="streakStat">1 day</strong></div>
+            <div><small>🪙 COINS</small><strong id="coinsStat">100</strong></div>
+            <div><small>🏆 BADGES</small><strong id="badgesStat">0</strong></div>
+          </div>
+        </article>
+
+        <article class="card portfolio-card">
+          <div class="card-title"><div><small>SIMULATED PORTFOLIO</small><h3 id="portfolioValue">$10,000.00</h3></div><span class="sim-tag">VIRTUAL</span></div>
+          <div class="portfolio-split"><div><small>Cash</small><strong id="dashCash">$10,000.00</strong></div><div><small>Positions</small><strong id="dashInvested">$0.00</strong></div></div>
+          <button class="secondary full" onclick="showView('simulator')">Open Trading Simulator</button>
+        </article>
+
+        <article class="card mission-card">
+          <div class="mission-icon">⚔</div>
+          <div class="grow"><small>NEXT MISSION</small><h3 id="nextMissionTitle">What Is a Stock?</h3><p id="nextMissionDesc">Learn the building block of public markets.</p></div>
+          <div class="reward">+<span id="nextMissionXP">100</span> XP</div>
+          <button class="primary full" onclick="continueQuest()">Start Mission</button>
+        </article>
+
+        <article class="card daily-card">
+          <div class="card-title"><div><small>DAILY QUEST</small><h3>Knowledge Check</h3></div><span id="dailyStatus" class="status-chip">AVAILABLE</span></div>
+          <p>Answer today's market question to keep your streak alive.</p>
+          <div id="dailyQuestion" class="daily-question"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="view-learn" class="view">
+      <div class="page-head compact"><div><div class="eyebrow">LEARNING MAP</div><h1>Choose your next <span>quest.</span></h1><p>Finish lessons and quizzes to unlock the next world.</p></div><div class="map-progress"><strong id="courseProgress">0%</strong><small>COURSE COMPLETE</small></div></div>
+      <div id="worlds" class="worlds"></div>
+    </section>
+
+    <section id="view-simulator" class="view">
+      <div class="page-head compact"><div><div class="eyebrow">PAPER TRADING LAB</div><h1>Practice with <span>virtual money.</span></h1><p>Learn order mechanics without risking real funds.</p></div><div class="cash-chip"><small>VIRTUAL CASH</small><strong id="simCash">$10,000.00</strong></div></div>
+      <div class="sim-layout">
+        <article class="terminal card">
+          <div class="terminal-head"><div><small>MARKET SIMULATOR</small><h3><span id="selectedSymbol">AAPL</span> <span class="muted" id="selectedName">Apple</span></h3></div><div class="quote"><strong id="quotePrice">$225.00</strong><span id="quoteChange">+0.85%</span></div></div>
+          <div class="symbol-tabs" id="symbolTabs"></div>
+          <div class="chart-wrap"><svg id="priceChart" viewBox="0 0 700 260" preserveAspectRatio="none" aria-label="simulated price chart"></svg></div>
+          <div class="order-ticket">
+            <div class="ticket-tabs"><button id="buyTab" class="active" onclick="setSide('BUY')">BUY</button><button id="sellTab" onclick="setSide('SELL')">SELL</button></div>
+            <label>Order type<select id="orderType"><option>Market</option><option>Limit</option></select></label>
+            <label>Shares<input id="shareQty" type="number" min="1" value="1"></label>
+            <div class="order-summary"><span>Estimated total</span><strong id="orderTotal">$225.00</strong></div>
+            <button id="placeOrderBtn" class="primary full" onclick="placeOrder()">Place Simulated Buy</button>
+            <small class="fineprint">Simulation only. Quotes in this demo are fictional and are not live market prices.</small>
+          </div>
+        </article>
+        <div class="side-stack">
+          <article class="card"><div class="card-title"><div><small>YOUR POSITIONS</small><h3>Portfolio</h3></div><span class="sim-tag">SIM</span></div><div id="positions" class="positions"></div></article>
+          <article class="card"><small>TRADE HISTORY</small><div id="tradeHistory" class="history"></div></article>
+          <article class="card tip-card"><small>COACH TIP</small><h3>Risk comes before reward.</h3><p>Practice position sizing and diversification instead of chasing the biggest simulated return.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-achievements" class="view">
+      <div class="page-head compact"><div><div class="eyebrow">TROPHY ROOM</div><h1>Your <span>achievements.</span></h1><p>Badges celebrate learning milestones, consistency and responsible simulation habits.</p></div></div>
+      <div id="achievementGrid" class="achievement-grid"></div>
+    </section>
+  
+<section id="coachView" class="view">
+  <div class="section-heading">
+    <div><span class="eyebrow">TRADEQUEST COACH</span><h1>Ask. Learn. Level up.</h1>
+    <p>Educational explanations only. The coach does not tell you what to buy or sell.</p></div>
+  </div>
+  <div class="coach-layout">
+    <div class="card coach-chat">
+      <div id="coachMessages" class="coach-messages">
+        <div class="coach-msg bot"><strong>Quest Coach</strong><p>Ask me to explain a trading concept, quiz you, or review the reasoning behind a simulated trade.</p></div>
+      </div>
+      <div class="coach-compose">
+        <input id="coachInput" placeholder="Example: Explain limit orders like I'm brand new">
+        <button class="primary-btn" onclick="askCoach()">Ask Coach</button>
+      </div>
+      <div class="prompt-chips">
+        <button onclick="coachPrompt('Quiz me on risk management')">Quiz me</button>
+        <button onclick="coachPrompt('Explain diversification simply')">Diversification</button>
+        <button onclick="coachPrompt('What is the difference between a market and limit order?')">Order types</button>
+      </div>
+    </div>
+    <aside class="card coach-rules">
+      <span class="eyebrow">COACH RULES</span><h3>Built for learning</h3>
+      <p>TradeQuest Coach explains concepts and can challenge your reasoning. It avoids personalized buy/sell recommendations and profit promises.</p>
+      <div class="mini-stat"><span>Mode</span><strong>Education</strong></div>
+      <div class="mini-stat"><span>Portfolio</span><strong>Simulated</strong></div>
+      <div class="mini-stat"><span>Advice</span><strong>Not provided</strong></div>
+    </aside>
+  </div>
+</section>
+
+<section id="proView" class="view">
+  <div class="section-heading">
+    <div><span class="eyebrow">TRADEQUEST PRO</span><h1>Unlock the full game.</h1>
+    <p>Phase 3 includes the paywall experience. Real billing activates after Stripe keys are connected.</p></div>
+  </div>
+  <div class="pricing-grid">
+    <article class="card price-card">
+      <span class="eyebrow">FREE</span><div class="price">$0</div><p>Start the first worlds and practice with virtual money.</p>
+      <ul><li>Core lessons</li><li>$10,000 simulated portfolio</li><li>XP, streaks & badges</li><li>Daily quest</li></ul>
+      <button class="secondary-btn" onclick="showView('learn')">Keep Learning</button>
+    </article>
+    <article class="card price-card featured">
+      <span class="eyebrow">PRO</span><div class="price">$14.99<span>/mo</span></div><p>Advanced education, analytics and coaching.</p>
+      <ul><li>All learning worlds</li><li>Unlimited AI Coach sessions</li><li>Advanced simulator analytics</li><li>Pro missions & achievements</li><li>Progress certificates</li></ul>
+      <button class="primary-btn" onclick="startCheckout()">Start Pro</button>
+      <small id="billingNote">Demo checkout until Stripe is configured.</small>
+    </article>
+  </div>
+</section>
+
+</main>
+
+  <div id="lessonModal" class="modal" aria-hidden="true">
+    <div class="modal-panel">
+      <button class="close" onclick="closeLesson()">×</button>
+      <div id="lessonContent"></div>
+    </div>
+  </div>
+
+  <div id="authModal" class="modal open" aria-hidden="false">
+    <div class="modal-panel auth-panel">
+      <div class="auth-brand">TRADE<span>QUEST</span></div>
+      <div class="pill">🎮 Phase 2 Player Account</div>
+      <h2>Start your trading quest.</h2>
+      <p>For this free local MVP, your profile and progress are saved on this device.</p>
+      <div class="auth-tabs"><button id="registerTab" class="active" onclick="setAuthMode('register')">Create Account</button><button id="loginTab" onclick="setAuthMode('login')">Log In</button></div>
+      <form id="authForm" onsubmit="submitAuth(event)">
+        <label id="nameField">Player name<input id="authName" maxlength="24" placeholder="e.g. Alex"></label>
+        <label>Email<input id="authEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="authPassword" type="password" minlength="4" required placeholder="4+ characters"></label>
+        <button class="primary full" id="authSubmit" type="submit">Create Free Account</button>
+      </form>
+      <small class="fineprint">Demo authentication only — do not reuse an important password. No real money or brokerage connection is used.</small>
+    </div>
+  </div>
+
+  <div id="profileModal" class="modal" aria-hidden="true">
+    <div class="modal-panel profile-panel">
+      <button class="close" onclick="closeProfile()">×</button>
+      <div class="big-avatar" id="profileAvatar">R</div><h2 id="profileName">Rookie</h2><p id="profileEmail"></p>
+      <div class="profile-stats"><div><small>LEVEL</small><strong id="profileLevel">1</strong></div><div><small>TOTAL XP</small><strong id="profileXP">0</strong></div><div><small>QUESTS</small><strong id="profileQuests">0</strong></div></div>
+      <button class="secondary full" onclick="resetProgress()">Reset Demo Progress</button>
+      <button class="danger-link" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <footer>TradeQuest • Educational simulation only. Nothing here is investment advice. Simulated results do not represent actual trading results.</footer>
+  <div id="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cloud.js"></script>
+<script src="phase3.js"></script>
+<script src="app.js"></script>
+<footer class="launch-footer">
+  <div><strong>TradeQuest</strong> <span>Learn. Practice. Level Up.</span></div>
+  <nav><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a><a href="/disclosures.html">Disclosures</a></nav>
+  <p>TradeQuest is an educational simulation. It is not a broker-dealer, investment adviser, or exchange. Simulated results do not represent actual trading.</p>
+</footer>
+</body>
+</html>
