@@ -11,19 +11,19 @@
 <div class="phase3-banner">
   <strong>PHASE 4</strong>
   <span>Launch build • cloud-ready • simulated trading only</span>
-  <button onclick="showView('pro')">Upgrade</button>
+  <button data-tq-click="showView('pro')">Upgrade</button>
 </div>
   <header class="site-header">
-    <button class="brand brand-btn" onclick="showView('dashboard')" aria-label="TradeQuest home">TRADE<span>QUEST</span></button>
+    <button class="brand brand-btn" data-tq-click="showView('dashboard')" aria-label="TradeQuest home">TRADE<span>QUEST</span></button>
     <nav>
-      <button onclick="showView('dashboard')">Dashboard</button>
-      <button onclick="showView('learn')">Learn</button>
-      <button onclick="showView('simulator')">Simulator</button>
-      <button onclick="showView('achievements')">Achievements</button>
+      <button data-tq-click="showView('dashboard')">Dashboard</button>
+      <button data-tq-click="showView('learn')">Learn</button>
+      <button data-tq-click="showView('simulator')">Simulator</button>
+      <button data-tq-click="showView('achievements')">Achievements</button>
     </nav>
     <div class="header-player">
       <span id="headerLevel">LVL 1</span>
-      <button class="avatar" id="avatarBtn" onclick="showProfile()">R</button>
+      <button class="avatar" id="avatarBtn" data-tq-click="showProfile()">R</button>
     </div>
   </header>
 
@@ -35,7 +35,7 @@
           <h1>Welcome back, <span id="playerName">Rookie</span>.</h1>
           <p>Build market knowledge one quest at a time. Your money is virtual. Your progress is real.</p>
         </div>
-        <button class="primary" onclick="continueQuest()">Continue Quest →</button>
+        <button class="primary" data-tq-click="continueQuest()">Continue Quest →</button>
       </div>
 
       <div class="dashboard-grid">
@@ -53,14 +53,14 @@
         <article class="card portfolio-card">
           <div class="card-title"><div><small>SIMULATED PORTFOLIO</small><h3 id="portfolioValue">$10,000.00</h3></div><span class="sim-tag">VIRTUAL</span></div>
           <div class="portfolio-split"><div><small>Cash</small><strong id="dashCash">$10,000.00</strong></div><div><small>Positions</small><strong id="dashInvested">$0.00</strong></div></div>
-          <button class="secondary full" onclick="showView('simulator')">Open Trading Simulator</button>
+          <button class="secondary full" data-tq-click="showView('simulator')">Open Trading Simulator</button>
         </article>
 
         <article class="card mission-card">
           <div class="mission-icon">⚔</div>
           <div class="grow"><small>NEXT MISSION</small><h3 id="nextMissionTitle">What Is a Stock?</h3><p id="nextMissionDesc">Learn the building block of public markets.</p></div>
           <div class="reward">+<span id="nextMissionXP">100</span> XP</div>
-          <button class="primary full" onclick="continueQuest()">Start Mission</button>
+          <button class="primary full" data-tq-click="continueQuest()">Start Mission</button>
         </article>
 
         <article class="card daily-card">
@@ -84,11 +84,11 @@
           <div class="symbol-tabs" id="symbolTabs"></div>
           <div class="chart-wrap"><svg id="priceChart" viewBox="0 0 700 260" preserveAspectRatio="none" aria-label="simulated price chart"></svg></div>
           <div class="order-ticket">
-            <div class="ticket-tabs"><button id="buyTab" class="active" onclick="setSide('BUY')">BUY</button><button id="sellTab" onclick="setSide('SELL')">SELL</button></div>
+            <div class="ticket-tabs"><button id="buyTab" class="active" data-tq-click="setSide('BUY')">BUY</button><button id="sellTab" data-tq-click="setSide('SELL')">SELL</button></div>
             <label>Order type<select id="orderType"><option>Market</option><option>Limit</option></select></label>
             <label>Shares<input id="shareQty" type="number" min="1" value="1"></label>
             <div class="order-summary"><span>Estimated total</span><strong id="orderTotal">$225.00</strong></div>
-            <button id="placeOrderBtn" class="primary full" onclick="placeOrder()">Place Simulated Buy</button>
+            <button id="placeOrderBtn" class="primary full" data-tq-click="placeOrder()">Place Simulated Buy</button>
             <small class="fineprint">Simulation only. Quotes in this demo are fictional and are not live market prices.</small>
           </div>
         </article>
@@ -117,12 +117,12 @@
       </div>
       <div class="coach-compose">
         <input id="coachInput" placeholder="Example: Explain limit orders like I'm brand new">
-        <button class="primary-btn" onclick="askCoach()">Ask Coach</button>
+        <button class="primary-btn" data-tq-click="askCoach()">Ask Coach</button>
       </div>
       <div class="prompt-chips">
-        <button onclick="coachPrompt('Quiz me on risk management')">Quiz me</button>
-        <button onclick="coachPrompt('Explain diversification simply')">Diversification</button>
-        <button onclick="coachPrompt('What is the difference between a market and limit order?')">Order types</button>
+        <button data-tq-click="coachPrompt('Quiz me on risk management')">Quiz me</button>
+        <button data-tq-click="coachPrompt('Explain diversification simply')">Diversification</button>
+        <button data-tq-click="coachPrompt('What is the difference between a market and limit order?')">Order types</button>
       </div>
     </div>
     <aside class="card coach-rules">
@@ -144,12 +144,12 @@
     <article class="card price-card">
       <span class="eyebrow">FREE</span><div class="price">$0</div><p>Start the first worlds and practice with virtual money.</p>
       <ul><li>Core lessons</li><li>$10,000 simulated portfolio</li><li>XP, streaks & badges</li><li>Daily quest</li></ul>
-      <button class="secondary-btn" onclick="showView('learn')">Keep Learning</button>
+      <button class="secondary-btn" data-tq-click="showView('learn')">Keep Learning</button>
     </article>
     <article class="card price-card featured">
       <span class="eyebrow">PRO</span><div class="price">$14.99<span>/mo</span></div><p>Advanced education, analytics and coaching.</p>
       <ul><li>All learning worlds</li><li>Unlimited AI Coach sessions</li><li>Advanced simulator analytics</li><li>Pro missions & achievements</li><li>Progress certificates</li></ul>
-      <button class="primary-btn" onclick="startCheckout()">Start Pro</button>
+      <button class="primary-btn" data-tq-click="startCheckout()">Start Pro</button>
       <small id="billingNote">Demo checkout until Stripe is configured.</small>
     </article>
   </div>
@@ -159,7 +159,7 @@
 
   <div id="lessonModal" class="modal" aria-hidden="true">
     <div class="modal-panel">
-      <button class="close" onclick="closeLesson()">×</button>
+      <button class="close" data-tq-click="closeLesson()">×</button>
       <div id="lessonContent"></div>
     </div>
   </div>
@@ -170,8 +170,8 @@
       <div class="pill">🎮 Phase 2 Player Account</div>
       <h2>Start your trading quest.</h2>
       <p>For this free local MVP, your profile and progress are saved on this device.</p>
-      <div class="auth-tabs"><button id="registerTab" class="active" onclick="setAuthMode('register')">Create Account</button><button id="loginTab" onclick="setAuthMode('login')">Log In</button></div>
-      <form id="authForm" onsubmit="submitAuth(event)">
+      <div class="auth-tabs"><button id="registerTab" class="active" data-tq-click="setAuthMode('register')">Create Account</button><button id="loginTab" data-tq-click="setAuthMode('login')">Log In</button></div>
+      <form id="authForm" data-tq-auth="true">
         <label id="nameField">Player name<input id="authName" maxlength="24" placeholder="e.g. Alex"></label>
         <label>Email<input id="authEmail" type="email" required placeholder="you@example.com"></label>
         <label>Password<input id="authPassword" type="password" minlength="4" required placeholder="4+ characters"></label>
@@ -183,11 +183,11 @@
 
   <div id="profileModal" class="modal" aria-hidden="true">
     <div class="modal-panel profile-panel">
-      <button class="close" onclick="closeProfile()">×</button>
+      <button class="close" data-tq-click="closeProfile()">×</button>
       <div class="big-avatar" id="profileAvatar">R</div><h2 id="profileName">Rookie</h2><p id="profileEmail"></p>
       <div class="profile-stats"><div><small>LEVEL</small><strong id="profileLevel">1</strong></div><div><small>TOTAL XP</small><strong id="profileXP">0</strong></div><div><small>QUESTS</small><strong id="profileQuests">0</strong></div></div>
-      <button class="secondary full" onclick="resetProgress()">Reset Demo Progress</button>
-      <button class="danger-link" onclick="logout()">Log Out</button>
+      <button class="secondary full" data-tq-click="resetProgress()">Reset Demo Progress</button>
+      <button class="danger-link" data-tq-click="logout()">Log Out</button>
     </div>
   </div>
 
@@ -197,6 +197,7 @@
 <script src="cloud.js"></script>
 <script src="phase3.js"></script>
 <script src="app.js"></script>
+<script src="controls.js"></script>
 <footer class="launch-footer">
   <div><strong>TradeQuest</strong> <span>Learn. Practice. Level Up.</span></div>
   <nav><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a><a href="/disclosures.html">Disclosures</a></nav>
