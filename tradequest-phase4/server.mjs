@@ -80,7 +80,8 @@ app.get("/api/health",(req,res)=>res.json({
   marketData:Boolean(process.env.MARKET_DATA_API_KEY)
 }));
 
-app.get("*",(req,res,next)=>{
+// Express 5 requires a named wildcard; braces also match the root path.
+app.get("/{*splat}",(req,res,next)=>{
   if(req.path.startsWith("/api/"))return next();
   if(req.accepts("html"))return res.sendFile("index.html",{root:process.cwd()});
   next();
