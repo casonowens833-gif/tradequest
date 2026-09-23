@@ -3,29 +3,33 @@
 // Zero-config mode remains fully local. Production services are activated by /api endpoints.
 window.TQ3 = { apiBase: "/api", pro: false };
 
-const coachAnswers = [
-  {keys:["limit","market"], text:"A market order prioritizes execution, while a limit order gives you price control but may never fill. In the simulator, try both and compare the trade-off rather than assuming one is always better."},
-  {keys:["divers"], text:"Diversification means spreading exposure so one position does not determine the whole portfolio's outcome. It can reduce concentration risk, but it cannot eliminate losses."},
-  {keys:["risk"], text:"Risk management starts before a trade: decide the thesis, invalidation point, position size, and how the position fits the rest of the portfolio. The goal is a repeatable process, not certainty."},
-  {keys:["candle","chart"], text:"A candlestick summarizes open, high, low and close for a time interval. It describes past price movement; it does not guarantee what happens next."},
-  {keys:["quiz"], text:"Quick quiz: You want to buy only if the price is $50 or lower. Which order type gives you that price control? Answer: a buy limit order, though it may not execute."}
-];
-function coachPrompt(t){document.getElementById("coachInput").value=t;askCoach()}
+let coachPending = false;
+function coachPrompt(text){ if(coachPending)return; document.getElementById('coachInput').value=text; askCoach(); }
 async function askCoach(){
-  const input=document.getElementById("coachInput"), text=(input.value||"").trim();
+  if(coachPending)return;
+  const input=document.getElementById('coachInput'), text=input.value.trim();
   if(!text)return;
-  addCoachMsg("user","You",text); input.value="";
-  let answer="";
+  if(text.length>1500){toast('Keep questions under 1,500 characters.');return;}
+  const identity=cloudUser?.id;
+  if(!tqSupabase || !identity || !cloudReady){openAuth();syncDialogVisibility();return;}
+  coachPending=true;
+  const button=document.getElementById('coachSend'); button.disabled=true;
+  const status=document.getElementById('coachStatus'); status.textContent='Thinking…';
   try{
-    const r=await fetch("/api/coach",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({message:text})});
-    if(r.ok){const j=await r.json(); answer=j.answer||""}
-  }catch(e){}
-  if(!answer){
-    const lower=text.toLowerCase();
-    answer=(coachAnswers.find(a=>a.keys.some(k=>lower.includes(k)))||{}).text ||
-      "For this prototype I can explain market basics, order types, diversification, risk management and charts. Production AI responses activate when the server-side AI endpoint is configured.";
-  }
-  addCoachMsg("bot","Quest Coach",answer);
+    const {data,error}=await tqSupabase.auth.getSession();
+    if(error || !data.session)throw new Error('Please log in again.');
+    if(cloudUser?.id!==identity)return;
+    const response=await fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+data.session.access_token},body:JSON.stringify({message:text}),signal:AbortSignal.timeout(55000)});
+    const result=await response.json();
+    if(cloudUser?.id!==identity)return;
+    if(!response.ok)throw new Error(result.error || 'AI Coach is unavailable.');
+    if(!result.answer)throw new Error('No answer was returned. Please retry.');
+    addCoachMsg('user','You',text);
+    addCoachMsg('bot','AI Coach',result.answer);
+    if(input.value.trim()===text)input.value='';
+    status.textContent='';
+  }catch(error){if(cloudUser?.id===identity)status.textContent=error.name==='TimeoutError'?'The request timed out. Try again.':error.message;}
+  finally{coachPending=false;button.disabled=false;}
 }
 function addCoachMsg(cls,name,text){
   const box=document.getElementById("coachMessages"); if(!box)return;
@@ -48,6 +52,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   if(typeof original==="function"){
     window.showView=function(name){
       if(name==="coach"||name==="pro"){
+        if(!cloudReady){openAuth();syncDialogVisibility();return;}
         document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
         const el=document.getElementById(name+"View"); if(el)el.classList.add("active");
         window.scrollTo({top:0,behavior:"smooth"}); return;
@@ -56,3 +61,14 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   }
 });
+
+let coachAccount = null;
+setInterval(()=>{
+  const id=cloudUser?.id || null;
+  if(id!==coachAccount){
+    coachAccount=id;
+    document.getElementById('coachMessages').replaceChildren();
+    document.getElementById('coachInput').value='';
+    document.getElementById('coachStatus').textContent='';
+  }
+},500);

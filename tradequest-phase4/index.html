@@ -20,6 +20,7 @@
       <button data-tq-click="showView('learn')">Learn</button>
       <button data-tq-click="showView('simulator')">Simulator</button>
       <button data-tq-click="showView('achievements')">Achievements</button>
+      <button data-tq-click="showView('coach')">AI Coach</button>
     </nav>
     <div class="header-player">
       <span id="headerLevel">LVL 1</span>
@@ -106,6 +107,8 @@
     </section>
   
 <section id="coachView" class="view">
+<p>Your question is sent to OpenAI for an AI-generated educational answer. Do not include private financial details. Each question is answered independently.</p>
+<p id="coachStatus" role="status" aria-live="polite"></p>
   <div class="section-heading">
     <div><span class="eyebrow">TRADEQUEST COACH</span><h1>Ask. Learn. Level up.</h1>
     <p>Educational explanations only. The coach does not tell you what to buy or sell.</p></div>
@@ -116,8 +119,8 @@
         <div class="coach-msg bot"><strong>Quest Coach</strong><p>Ask me to explain a trading concept, quiz you, or review the reasoning behind a simulated trade.</p></div>
       </div>
       <div class="coach-compose">
-        <input id="coachInput" placeholder="Example: Explain limit orders like I'm brand new">
-        <button class="primary-btn" data-tq-click="askCoach()">Ask Coach</button>
+        <input id="coachInput" maxlength="1500" placeholder="Example: Explain limit orders like I'm brand new">
+        <button class="primary-btn" id="coachSend" data-tq-click="askCoach()">Ask Coach</button>
       </div>
       <div class="prompt-chips">
         <button data-tq-click="coachPrompt('Quiz me on risk management')">Quiz me</button>
@@ -148,7 +151,7 @@
     </article>
     <article class="card price-card featured">
       <span class="eyebrow">PRO</span><div class="price">$14.99<span>/mo</span></div><p>Advanced education, analytics and coaching.</p>
-      <ul><li>All learning worlds</li><li>Unlimited AI Coach sessions</li><li>Advanced simulator analytics</li><li>Pro missions & achievements</li><li>Progress certificates</li></ul>
+      <ul><li>All learning worlds</li><li>AI Coach access (usage limits apply)</li><li>Advanced simulator analytics</li><li>Pro missions & achievements</li><li>Progress certificates</li></ul>
       <button class="primary-btn" data-tq-click="startCheckout()">Start Pro</button>
       <small id="billingNote">Demo checkout until Stripe is configured.</small>
     </article>
@@ -167,17 +170,18 @@
   <div id="authModal" class="modal open" aria-hidden="false">
     <div class="modal-panel auth-panel">
       <div class="auth-brand">TRADE<span>QUEST</span></div>
-      <div class="pill">🎮 Phase 2 Player Account</div>
+      <div class="pill">🎮 TradeQuest Account</div>
       <h2>Start your trading quest.</h2>
-      <p>For this free local MVP, your profile and progress are saved on this device.</p>
+      <p>Sign in to save lessons and practice progress to your account.</p>
       <div class="auth-tabs"><button id="registerTab" class="active" data-tq-click="setAuthMode('register')">Create Account</button><button id="loginTab" data-tq-click="setAuthMode('login')">Log In</button></div>
+      <p id="authStatus" role="status" aria-live="polite"></p>
       <form id="authForm" data-tq-auth="true">
         <label id="nameField">Player name<input id="authName" maxlength="24" placeholder="e.g. Alex"></label>
         <label>Email<input id="authEmail" type="email" required placeholder="you@example.com"></label>
-        <label>Password<input id="authPassword" type="password" minlength="4" required placeholder="4+ characters"></label>
-        <button class="primary full" id="authSubmit" type="submit">Create Free Account</button>
+        <label>Password<input id="authPassword" type="password" minlength="8" autocomplete="new-password" required placeholder="At least 8 characters"></label>
+        <button class="primary full" id="authSubmit" type="submit" disabled>Create Free Account</button>
       </form>
-      <small class="fineprint">Demo authentication only — do not reuse an important password. No real money or brokerage connection is used.</small>
+      <small class="fineprint">Your account uses Supabase authentication. Trading remains simulated; no brokerage connection is used.</small>
     </div>
   </div>
 
@@ -186,15 +190,16 @@
       <button class="close" data-tq-click="closeProfile()">×</button>
       <div class="big-avatar" id="profileAvatar">R</div><h2 id="profileName">Rookie</h2><p id="profileEmail"></p>
       <div class="profile-stats"><div><small>LEVEL</small><strong id="profileLevel">1</strong></div><div><small>TOTAL XP</small><strong id="profileXP">0</strong></div><div><small>QUESTS</small><strong id="profileQuests">0</strong></div></div>
-      <button class="secondary full" data-tq-click="resetProgress()">Reset Demo Progress</button>
+      <button class="secondary full" data-tq-click="resetProgress()">Reset Practice Progress</button>
       <button class="danger-link" data-tq-click="logout()">Log Out</button>
     </div>
   </div>
 
+  <p><span id="syncStatus" role="status" aria-live="polite">Connecting…</span> <button data-tq-click="retrySave()">Retry save</button></p>
   <footer>TradeQuest • Educational simulation only. Nothing here is investment advice. Simulated results do not represent actual trading results.</footer>
   <div id="toast"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cloud.js"></script>
+<script src="cloud-auth.js"></script>
 <script src="phase3.js"></script>
 <script src="app.js"></script>
 <script src="controls.js"></script>
@@ -205,3 +210,4 @@
 </footer>
 </body>
 </html>
+

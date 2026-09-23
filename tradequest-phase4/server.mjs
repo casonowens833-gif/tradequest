@@ -1,5 +1,6 @@
 
 import express from "express";
+import { createCoachHandler } from "./coach.mjs";
 import Stripe from "stripe";
 import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
@@ -8,7 +9,7 @@ const app=express();
 app.disable("x-powered-by");
 
 const stripe=process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
-const openai=process.env.OPENAI_API_KEY ? new OpenAI({apiKey:process.env.OPENAI_API_KEY}) : null;
+const openai=process.env.OPENAI_API_KEY ? new OpenAI({apiKey:process.env.OPENAI_API_KEY, timeout:45000, maxRetries:0}) : null;
 const supabaseAdmin=(process.env.SUPABASE_URL&&process.env.SUPABASE_SERVICE_ROLE_KEY)
  ? createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY) : null;
 
@@ -43,19 +44,9 @@ app.get("/api/config",(req,res)=>res.json({
   production:Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_ANON_KEY)
 }));
 
-app.post("/api/coach",async(req,res)=>{
-  if(!openai)return res.status(503).json({error:"AI not configured"});
-  const message=String(req.body?.message||"").trim().slice(0,1500);
-  if(!message)return res.status(400).json({error:"Message required"});
-  try{
-    const response=await openai.responses.create({
-      model:process.env.OPENAI_MODEL||"gpt-5-mini",
-      instructions:"You are TradeQuest Coach, an educational trading tutor. Explain financial-market concepts clearly. Do not provide personalized investment recommendations, tell the user what security to buy or sell, promise returns, or imply simulated results predict real results. When useful, teach risk management and distinguish education from financial advice.",
-      input:message
-    });
-    res.json({answer:response.output_text});
-  }catch(e){res.status(500).json({error:"Coach unavailable"});}
-});
+const coachAuth = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {auth:{persistSession:false, autoRefreshToken:false}}).auth : null;
+app.post('/api/coach', createCoachHandler({openai, auth:coachAuth, model:process.env.OPENAI_MODEL || 'gpt-5-mini'}));
 
 app.post("/api/create-checkout",async(req,res)=>{
   if(!stripe||!process.env.STRIPE_PRICE_ID)return res.status(503).json({error:"Billing not configured"});
