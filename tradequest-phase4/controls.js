@@ -1,6 +1,7 @@
 // Delegation also handles lesson and simulator buttons created after page load.
 // Use explicit actions, never eval or inline JavaScript handlers.
 const tqActions = {
+  retrySave: () => flushCloudSave(),
   showView: value => window.showView(value),
   showProfile: () => showProfile(),
   continueQuest: () => continueQuest(),

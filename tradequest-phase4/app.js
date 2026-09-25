@@ -1,5 +1,3 @@
-const STORAGE='tradequest_phase3_v1';
-const USERS='tradequest_demo_users_v2';
 const quotes={
  AAPL:{name:'Apple',price:225.00,change:0.85,seed:[198,202,201,207,205,211,214,210,216,218,215,222,225]},
  MSFT:{name:'Microsoft',price:517.30,change:0.42,seed:[484,489,492,487,498,501,499,506,510,509,513,515,517]},
@@ -34,17 +32,13 @@ const badges=[
 ];
 let state=null,authMode='register',selected='AAPL',side='BUY',activeLesson=null;
 function freshState(profile){return{profile,createdAt:Date.now(),xp:0,coins:100,streak:1,lastDaily:null,completed:[],positions:{},cash:10000,trades:[],earnedBadges:[]}}
-function loadUsers(){try{return JSON.parse(localStorage.getItem(USERS)||'{}')}catch{return{}}}
-function saveUsers(u){localStorage.setItem(USERS,JSON.stringify(u))}
-function getSessionEmail(){return localStorage.getItem('tradequest_session_email')}
-function load(){let email=getSessionEmail();if(!email){openAuth();return}try{state=JSON.parse(localStorage.getItem(STORAGE+'_'+email));}catch{}if(!state){openAuth();return}closeAuth();touchStreak();syncBadges();renderAll()}
-function save(){if(!state)return;localStorage.setItem(STORAGE+'_'+state.profile.email,JSON.stringify(state));renderHeader()}
+function save(){if(!state)return;queueCloudSave();renderHeader()}
 function setAuthMode(m){authMode=m;document.getElementById('registerTab').classList.toggle('active',m==='register');document.getElementById('loginTab').classList.toggle('active',m==='login');document.getElementById('nameField').style.display=m==='register'?'grid':'none';document.getElementById('authSubmit').textContent=m==='register'?'Create Free Account':'Log In'}
-function submitAuth(e){e.preventDefault();let email=document.getElementById('authEmail').value.trim().toLowerCase(),password=document.getElementById('authPassword').value,name=document.getElementById('authName').value.trim()||'Rookie';let users=loadUsers();if(authMode==='register'){if(users[email])return toast('An account with that email already exists.');users[email]={name,password};saveUsers(users);state=freshState({name,email});localStorage.setItem('tradequest_session_email',email);save();closeAuth();renderAll();toast('Account created — welcome to TradeQuest! +100 starter coins')}else{if(!users[email]||users[email].password!==password)return toast('Email or password does not match this demo account.');localStorage.setItem('tradequest_session_email',email);try{state=JSON.parse(localStorage.getItem(STORAGE+'_'+email))}catch{}if(!state)state=freshState({name:users[email].name,email});closeAuth();touchStreak();syncBadges();renderAll();toast('Welcome back, '+state.profile.name+'!')}}
+function submitAuth(event){return submitCloudAuth(event)}
 function openAuth(){document.getElementById('authModal').classList.add('open')}
 function closeAuth(){document.getElementById('authModal').classList.remove('open')}
-function logout(){localStorage.removeItem('tradequest_session_email');state=null;closeProfile();openAuth();toast('Logged out.')}
-function resetProgress(){if(!state)return;let p=state.profile;state=freshState(p);save();closeProfile();renderAll();toast('Demo progress reset.')}
+function logout(){return cloudLogout()}
+function resetProgress(){if(!state)return;let p=state.profile;state=freshState(p);save();closeProfile();renderAll();toast('Practice progress reset.')}
 function touchStreak(){if(!state)return;let today=new Date().toISOString().slice(0,10),last=state.lastVisit;if(last&&last!==today){let d=Math.round((new Date(today)-new Date(last))/86400000);state.streak=d===1?state.streak+1:1}state.lastVisit=today;save()}
 function xpLevel(){let total=state?.xp||0,level=Math.floor(total/500)+1,into=total%500;return{level,into,next:500,pct:Math.round(into/500*100)}}
 function rankFor(level){return level>=8?'Market Master':level>=6?'Strategist':level>=4?'Analyst':level>=2?'Apprentice Trader':'Rookie Trader'}
@@ -79,4 +73,3 @@ function renderAchievements(){if(!state)return;syncBadges();document.getElementB
 function showProfile(){if(!state)return;let l=xpLevel();document.getElementById('profileAvatar').textContent=state.profile.name[0].toUpperCase();document.getElementById('profileName').textContent=state.profile.name;document.getElementById('profileEmail').textContent=state.profile.email;document.getElementById('profileLevel').textContent=l.level;document.getElementById('profileXP').textContent=state.xp;document.getElementById('profileQuests').textContent=state.completed.length;document.getElementById('profileModal').classList.add('open')}
 function closeProfile(){document.getElementById('profileModal').classList.remove('open')}
 function toast(t){let e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.style.display='none',2800)}
-load();
